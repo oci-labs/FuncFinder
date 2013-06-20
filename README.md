@@ -5,10 +5,10 @@ The FuncFinder command line application takes a regular expression and a list of
 C++ source files and lists the entire function definition of any function that contains
 the regular expression. It works similarly to <a href="https://en.wikipedia.org/wiki/Grep">
 grep</a> with <code>-A NUM, --after-context=NUM</code> and <code>-B NUM, --before-context=NUM</code>
-options except instead of a specified number of trailing and leading lines it prints
-the entire function definition regardless of the number of lines.&nbsp; The 
-output specifies the line with the regex as well as the range of lines of the 
-function in the file.
+options. Except, instead of a specified number of trailing and leading lines it prints
+the entire function definition regardless of the number of lines. In addition to
+the function definition, the output includes the line with the regex as well as the
+range of lines of the function in the file.
     <pre class="code">&gt; FuncFinder
 Usage: FuncFinder regex source_file ...
 </pre>
@@ -47,8 +47,9 @@ load_file (Vector &amp;vector,
     <p>
         Note the use of <code>std::ifstream</code> in the first line of the <code>load_file</code>
         function. Since FuncFinder found the search string in the compare_histo.cpp
-        file, it reported the line number of <code>std::ifstream</code> and printed the
-        entire function definition.
+        file, it reported the number of the line that matched <code>std::ifstream</code> and printed the
+        entire function definition. Here our search regular expression is just the simple string,
+        "std::ifstream", but it could have been any regular expression.
     </p>
     <p>
         FuncFinder is not written with performance particularly
