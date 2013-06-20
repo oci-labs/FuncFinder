@@ -14,7 +14,8 @@
 #include <tuple>
 
 #include <map>
-std::map<std::string, size_t> countMatches(const std::string& s, const std::vector<std::string>& v) {
+std::map<std::string, size_t> countMatches(const std::string& s, const std::vector<std::string>& v) 
+{
   std::map<std::string, size_t> result;
   if (v.empty()) return result;
   // create regex expression of the form "\\b((?:first)|(?:second)|(?:etc))\\b"
@@ -42,8 +43,8 @@ size_t countMatches(const std::string& s, const std::regex& exp) {
 }
 
 // Finds regExp in function definitions and places entire function in output stream.
-// Stores up to the complete input stream in memory plus overhead, if os != nullptr.
-// Does not handle multi-line raw strings or preprocessor \.
+// Stores up to the complete input stream in memory plus overhead if os != nullptr.
+// Does not handle multi-line raw strings or preprocessor continuation lines.
 // @param is input stream
 // @param regExp regular expression to search for within function definitions
 // @param os output stream, if nullptr then greatly reduced memory usage.
@@ -109,8 +110,8 @@ std::tuple<size_t,size_t,size_t>
       // subtract out namespace/class open brackets so we don't report the entire namespace/class
       numOpenBrackets -= countMatches(s, nsClassExp);
     }
-    //numOpenBrackets += std::count(s.cbegin(), s.cend(), '{');
-    //auto numCloseBrackets = std::count(s.cbegin(), s.cend(), '}');
+    //numOpenBrackets += std::count(s.cbegin(), s.cend(), '{');      // alternative implementation
+    //auto numCloseBrackets = std::count(s.cbegin(), s.cend(), '}'); // instead of the for_each
     decltype(numOpenBrackets) numCloseBrackets = 0;
     std::for_each(s.cbegin(), s.cend(), 
       [&] (char c) { 
@@ -119,7 +120,7 @@ std::tuple<size_t,size_t,size_t>
     });
 
     if (numCloseBrackets > 0) {
-      // only clear at '}' so that function name, comments, etc included in output of find
+      // only clear at '}' so that function name, comments, etc. included in output of find
       numOpenBrackets -= numCloseBrackets;
       if (numOpenBrackets <= 0) {
         if (foundLoc > 0) {
@@ -170,22 +171,24 @@ void processFile(const std::string& regExpStr, const std::string& fileName)
   }
 }
 
-int main(int argc, char* argv[]) try {
-  if (argc < 3) {
-    std::cerr << "Usage: " << argv[0] << " regex source_file ..." << std::endl;
-    return 1;
-  }
+int main(int argc, char* argv[]) 
+{
+  try {
+    if (argc < 3) {
+      std::cerr << "Usage: " << argv[0] << " regex source_file ..." << std::endl;
+      return 1;
+    }
 
-  for (int i = 2; i < argc; ++i) {
-    processFile(argv[1], argv[i]);
-  }
+    for (int i = 2; i < argc; ++i) {
+      processFile(argv[1], argv[i]);
+    }
 
-  return 0;
-} catch (std::exception& e) {
-  std::cerr << "Exception: " << e.what() << std::endl;
-  return 1;
-} catch (...) {
-  std::cerr << "Unknown exception." << std::endl;
+    return 0;
+  } catch (std::exception& e) {
+    std::cerr << "Exception: " << e.what() << std::endl;
+  } catch (...) {
+    std::cerr << "Unknown exception." << std::endl;
+  }
   return 1;
 }
 
